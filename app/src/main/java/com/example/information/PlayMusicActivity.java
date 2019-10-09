@@ -94,6 +94,7 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
     boolean flag_lrc=false;
     AlertDialog   dialog;
     private long exitTime=0;
+    int frc=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +125,8 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
         bt_pre.setOnClickListener(this);
         bt_next.setOnClickListener(this);
         bt_musiclist.setOnClickListener(this);
+        mediaPlayer.setOnCompletionListener(onCompletionListener);
+        mediaPlayer.setOnErrorListener(onErrorListener);
     }
 
     @Override
@@ -163,6 +166,7 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
                 }
                 break;
             case R.id.bt_pre:
+                pisition_flag=0;
                 String[] ids=db.receiveids();
                 if (flag_playsong)
                 {
@@ -206,6 +210,7 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
                 flag_playsong=true;
                 break;//前一首
             case R.id.bt_next:
+                pisition_flag=0;
                 String[] ids1=db.receiveids();
                 if (flag_playsong)
                 {
@@ -346,16 +351,27 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
                 //获取进度条的进度
             }
         });
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                bt_onff.setBackgroundResource(R.drawable.stop);
-                pauseflag=true;
-            }
-        });
+
+
         thread_receivesonglink(songsid);
         thread_recevielrc(songsid);
     }
+
+    MediaPlayer.OnCompletionListener onCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            Toast.makeText(PlayMusicActivity.this,"播完了",Toast.LENGTH_LONG).show();
+            bt_onff.setBackgroundResource(R.drawable.stop);
+            pauseflag=true;
+
+        }
+    };
+    MediaPlayer.OnErrorListener onErrorListener=new MediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+            return false;
+        }
+    };
     //获取歌词和播放连接的线程
     private void thread_receivesonglink(String currentid){
         thread1=  new Thread(new Runnable() {
@@ -605,21 +621,54 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
 
         pm_timing.setText(String.valueOf(seccond/60)+":"+String.valueOf(seccond%60));
         pm_totaltime.setText(String.valueOf(csecound/60)+":"+String.valueOf(csecound%60));
+        if (seccond==csecound)
+        {
+            bt_onff.setBackgroundResource(R.drawable.stop);
+            pisition_flag=0;
+            mediaPlayer.stop();
+        }
+        else;
 
+       boolean frcg=false;
         if (flag_lrc){
             for (int i=0;i<long_lrc.length;i++){
                 if (i==long_lrc.length-1){
+                    frcg=true;
 
                 }
                 else{
                     if (now>long_lrc[i]&&now<long_lrc[i+1]){
                         dolrc(i);
+                        frc=i;
                     }
                 }
-
             }
+
+        }
+        if ( frcg ==true && frc==long_lrc.length-2){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(6000);
+                         Message ms=new Message();
+                         ms.obj=1;
+                         handler_llc.sendMessage(ms);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+            dolrc(long_lrc.length-1);
         }
     }
+    Handler handler_llc=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            dolrc(long_lrc.length-1);
+        }
+    };
     //对指定行的歌词做操作
     private void dolrc(int positon){
 
@@ -648,6 +697,7 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
 //            lrc_recycle.setLayoutManager(mlinear);
             mlinear.scrollToPositionWithOffset(positon, 8);
             pisition_flag=positon;
+            frc++;
         }
 
     }

@@ -56,8 +56,6 @@ public class ItemVieoFragmentAdapter extends FragmentPagerAdapter {
                     String videotype="北美榜";
                     bundle.putString("url",url);
                     bundle.putString("videotype",videotype);
-                }else if (list_videotypes.get(i).equals("影视搜索")){
-                    bundle.putString("tag","影视搜索");
                 }
                 fragment.setArguments(bundle);
         return fragment;

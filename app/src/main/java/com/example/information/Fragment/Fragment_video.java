@@ -27,7 +27,7 @@ public class Fragment_video extends Fragment {
     Context context;
     List<Fragment> fragments;
     List<String> videos_tag;
-    String[] strings_video={"正在热映","即将上映","新片榜","口碑榜","北美榜","top100","影视搜索"};
+    String[] strings_video={"正在热映","即将上映","新片榜","口碑榜","北美榜","top100"};
     ItemVieoFragmentAdapter imAdapter;
     @Nullable
     @Override
@@ -51,7 +51,6 @@ public class Fragment_video extends Fragment {
         fragments.add(new BasevideoFragment());
         fragments.add(new BasevideoFragment());
         fragments.add(new BasevideoFragment());
-        fragments.add(new BasevideoFragment());
 
 //  String[] strings_video={"正在热映","即将上映","新片榜","口碑榜","北美榜","top100","影视搜索"};
         videos_tag=new ArrayList<String>();
@@ -62,7 +61,6 @@ public class Fragment_video extends Fragment {
         videos_tag.add("口碑榜");
         videos_tag.add("北美榜");
         videos_tag.add("top100");
-        videos_tag.add("影视搜索");
 
         imAdapter = new ItemVieoFragmentAdapter(getChildFragmentManager(), strings_video, fragments, context,videos_tag);
         viewPager_video.setAdapter(imAdapter);
