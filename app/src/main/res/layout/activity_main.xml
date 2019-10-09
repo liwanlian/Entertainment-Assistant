@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:name=".activity.MainActivity"
+    android:theme="@style/Base.AppTheme"
+    android:orientation="vertical" >
+
+    <!--<FrameLayout-->
+    <!--android:id="@+id/id_content"-->
+    <!--android:layout_weight="1"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"/>-->
+    <!--<androidx.viewpager.widget.ViewPager-->
+    <!--android:id="@+id/vp_content"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:background="#ffffff"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_weight="1" >-->
+    <!--</androidx.viewpager.widget.ViewPager>-->
+    <FrameLayout
+        android:id="@+id/id_content"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
+    <!--<androidx.viewpager.widget.ViewPager-->
+        <!--android:id="@+id/vp1_content"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="0.001" >-->
+    <!--</androidx.viewpager.widget.ViewPager>-->
+    <include layout="@layout/activity_bottom" />
+
+</LinearLayout>
