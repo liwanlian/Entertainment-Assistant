@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewParent;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.information.Bean.Bean_video;
 import com.example.information.Bean.Bean_videodetail;
+import com.example.information.Configure.exitsystem;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -45,7 +47,8 @@ public class PlayvideooneActivity extends AppCompatActivity {
     private String videoid;
     private String photourl;
     private Bean_videodetail bean_videodetail;
-    private View view_parent;
+    private long exitTime=0;
+    private Thread thread1,thread2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +99,7 @@ public class PlayvideooneActivity extends AppCompatActivity {
     //将传送的id访问对应的api
     //http://api.douban.com/v2/movie/subject/27119724?apikey=0b2bdeda43b5688921839c8ecb20399b&city=%E5%8C%97%E4%BA%AC&client=&udid=
     private void subjectfromid(String id){
-        new Thread(new Runnable() {
+       thread1= new Thread(new Runnable() {
             @Override
             public void run() {
                 String path="http://api.douban.com/v2/movie/subject/"+id+"?apikey=0b2bdeda43b5688921839c8ecb20399b&city=%E5%8C%97%E4%BA%AC&client=&udid=";
@@ -120,7 +123,8 @@ public class PlayvideooneActivity extends AppCompatActivity {
                 }
 
             }
-        }).start();
+        });
+       thread1.start();
     }
     Handler handler_subject=new Handler(){
         @Override
@@ -359,5 +363,30 @@ public class PlayvideooneActivity extends AppCompatActivity {
 
         }
     }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
 
+    private void exit() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(getApplicationContext(),
+                    "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        }
+        else{
+            Intent intent = new Intent();
+            intent.setAction(exitsystem.SYSTEM_EXIT);
+            sendBroadcast(intent);
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+       thread1.destroy();
+    }
 }

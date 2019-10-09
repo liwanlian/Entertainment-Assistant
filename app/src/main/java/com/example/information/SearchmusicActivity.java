@@ -1,13 +1,16 @@
 package com.example.information;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +20,7 @@ import com.example.information.Bean.Bean_lrc;
 import com.example.information.Bean.Bean_playmusic;
 import com.example.information.Bean.Bean_rankinglist;
 import com.example.information.Bean.Bean_searchmusic;
+import com.example.information.Configure.exitsystem;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.utils.L;
 
@@ -28,13 +32,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-public class SearchmusicActivity extends AppCompatActivity {
+public class SearchmusicActivity extends exitsystem {
 
    private EditText et_search;
    private TextView tv_sure;
    private RecyclerView recyclerView;
     List<Bean_searchmusic.SearchData> list_searchresult;
     LinearLayoutManager mlinear;
+    private long exitTime=0;
+    private Thread thread1;
+    private ImageView search_back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +52,14 @@ public class SearchmusicActivity extends AppCompatActivity {
         et_search=(EditText)findViewById(R.id.et_searchcontent);
         tv_sure=(TextView)findViewById(R.id.searchmusic_tv);
         recyclerView=(RecyclerView)findViewById(R.id.search_music);
+        search_back=(ImageView) findViewById(R.id.search_back);
+        search_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(SearchmusicActivity.this,MainActivity.class);
+                startActivity(intent);
+            }
+        });
         tv_sure.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,7 +77,7 @@ public class SearchmusicActivity extends AppCompatActivity {
     //搜索歌曲
     private void Searchmusic(String songname){
         //http://tingapi.ting.baidu.com/v1/restserver/ting?format=json&calback=&from=webapp_music&method=baidu.ting.search.catalogSug&query=%E8%B5%B7%E9%A3%8E%E4%BA%86
-        new Thread(new Runnable() {
+       thread1= new Thread(new Runnable() {
             @Override
             public void run() {
                 HttpURLConnection connection;
@@ -100,7 +115,8 @@ public class SearchmusicActivity extends AppCompatActivity {
 
 
             }
-        }).start();
+        });
+       thread1.start();
     }
     Handler handler_searchmusic=new Handler(){
         @Override
@@ -125,4 +141,31 @@ public class SearchmusicActivity extends AppCompatActivity {
             }
         }
     };
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+
+    private void exit() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(getApplicationContext(),
+                    "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        }
+        else{
+            Intent intent = new Intent();
+            intent.setAction(exitsystem.SYSTEM_EXIT);
+            sendBroadcast(intent);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        thread1.destroy();
+    }
 }

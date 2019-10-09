@@ -14,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -37,6 +38,7 @@ import com.example.information.Adapter.LrcInfoAdapter;
 import com.example.information.Bean.Bean_lrc;
 import com.example.information.Bean.Bean_playmusic;
 import com.example.information.Configure.DBManager;
+import com.example.information.Configure.exitsystem;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 
@@ -58,7 +60,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class PlayMusicActivity extends AppCompatActivity implements View.OnClickListener  {
+public class PlayMusicActivity extends exitsystem implements View.OnClickListener  {
 
     //界面控件
     Button bt_back;
@@ -91,6 +93,7 @@ public class PlayMusicActivity extends AppCompatActivity implements View.OnClick
     String[] ids2;
     boolean flag_lrc=false;
     AlertDialog   dialog;
+    private long exitTime=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -341,6 +344,13 @@ public class PlayMusicActivity extends AppCompatActivity implements View.OnClick
                 musicsongtwo.post(runnable);
 
                 //获取进度条的进度
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                bt_onff.setBackgroundResource(R.drawable.stop);
+                pauseflag=true;
             }
         });
         thread_receivesonglink(songsid);
@@ -642,40 +652,35 @@ public class PlayMusicActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-    //对seekbar的监听
-    private class MyseekBar implements SeekBar.OnSeekBarChangeListener{
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            if (b)
-                mediaPlayer.seekTo(i);
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            exit();
+            return false;
         }
+        return super.onKeyDown(keyCode,event);
+    }
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            mediaPlayer.seekTo(seekBar.getProgress());
+    private void exit() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(getApplicationContext(),
+                    "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
         }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            mediaPlayer.seekTo(seekBar.getProgress());
-            seekBar.setProgress(mediaPlayer.getCurrentPosition());
-            System.out.println("process="+seekBar.getProgress());
+        else{
+            Intent intent = new Intent();
+            intent.setAction(exitsystem.SYSTEM_EXIT);
+            sendBroadcast(intent);
         }
     }
-    private void getPro(){
-        timer=new Timer();
-        timer.schedule(new TimerTask() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mediaPlayer.stop();
+        mediaPlayer.release();
+        musicsongtwo.removeCallbacks(runnable);
+        thread1.destroy();
+        thread2.destroy();
 
-            @Override
-            public void run() {
-
-                //获取歌曲的进度
-                int p = mediaPlayer.getCurrentPosition();
-
-                //将获取歌曲的进度赋值给seekbar
-                seekBar.setProgress(p);
-            }
-        }, 0, 2000);
     }
 }

@@ -41,6 +41,8 @@ public class BaseFragment extends Fragment {
     private static final int UPNEWS_INSERT = 0;
     private int page =0,row =10;
     private static final int SELECT_REFLSH = 1;
+    Thread thread1;
+
     /**
      * ProgressBar原型进度条 让用户知道正在加载数据
      */
@@ -151,7 +153,7 @@ public class BaseFragment extends Fragment {
     //异步加载数据   聚合平台的新闻接口的key 是 8a959eee5938e6fee92bf636f3a7a6c4
     private void getDataFromNet(final String data, final int flag){
         final String path = "http://v.juhe.cn/toutiao/index?type="+data+"&key=8a959eee5938e6fee92bf636f3a7a6c4";
-        new Thread(new Runnable() {
+    thread1=    new Thread(new Runnable() {
             @Override
             public void run() {
                 Bean_news resultbean=new Bean_news();
@@ -190,9 +192,9 @@ public class BaseFragment extends Fragment {
 //                            msg.obj = resultbean;
 //                            newsHandler.sendMessage(msg);
 //                        }
-                       Message mm=new Message();
-                       mm.obj=bean_news.getError_code();
-                       newsHandler1.sendMessage(mm);
+                        Message mm=new Message();
+                        mm.obj=bean_news.getError_code();
+                        newsHandler1.sendMessage(mm);
                     }
 
 
@@ -200,22 +202,34 @@ public class BaseFragment extends Fragment {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
             }
+        });
+    thread1.start();
 
-        }).start();
     }
+private Runnable mrunnable=new Runnable() {
+    @Override
+    public void run() {
+
+    }
+};
     @SuppressLint("HandlerLeak")
     private Handler newsHandler1 = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             int code=(int)msg.obj;
             progressBar.setVisibility(View.GONE);
+            textView.setVisibility(View.VISIBLE);
             if (code==10012)
                 textView.setText("超过每日可允许请求次数!");
             else
                 textView.setText("请检查你当前的网络是否正常！");
         }
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        thread1.destroy();
+    }
 }

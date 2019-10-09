@@ -1,22 +1,26 @@
 package com.example.information;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.example.information.Configure.exitsystem;
 import com.example.information.Fragment.Fragment_music;
 import com.example.information.Fragment.Fragment_news;
 import com.example.information.Fragment.Fragment_video;
 
-public class MainActivity extends FragmentActivity implements View.OnClickListener {
+public class MainActivity extends exitsystem implements View.OnClickListener {
 
     //底部菜单栏的三个布局
     private LinearLayout ll_news;
@@ -35,13 +39,14 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private Fragment_news fragment_news;
     private Fragment_music fragment_music;
     private Fragment_video fragment_video;
+    private long exitTime=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
         control_listener();
-        initViewpage(2);
+        initViewpage(0);
     }
     //界面初始化
     private void initView(){
@@ -155,4 +160,26 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             transaction.hide(fragment_video);
         }
     }
-}
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode==KeyEvent.KEYCODE_BACK){
+            exit();
+            return false;
+        }
+        return super.onKeyDown(keyCode,event);
+    }
+
+    private void exit() {
+        if ((System.currentTimeMillis() - exitTime) > 2000) {
+            Toast.makeText(getApplicationContext(),
+                    "再按一次退出程序", Toast.LENGTH_SHORT).show();
+            exitTime = System.currentTimeMillis();
+        }
+        else{
+            Intent intent = new Intent();
+            intent.setAction(exitsystem.SYSTEM_EXIT);
+            sendBroadcast(intent);
+            }
+    }
+    }
