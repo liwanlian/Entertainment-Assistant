@@ -31,7 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-public class PlayvideooneActivity extends AppCompatActivity {
+public class PlayvideooneActivity extends exitsystem {
 //界面控件
     ImageView videoplayfirst_back;
     ImageView videoplayfirst_image;
@@ -384,9 +384,5 @@ public class PlayvideooneActivity extends AppCompatActivity {
             sendBroadcast(intent);
         }
     }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-       thread1.destroy();
-    }
+
 }

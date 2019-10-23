@@ -230,6 +230,6 @@ private Runnable mrunnable=new Runnable() {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        thread1.destroy();
+       // thread1.destroy();
     }
 }

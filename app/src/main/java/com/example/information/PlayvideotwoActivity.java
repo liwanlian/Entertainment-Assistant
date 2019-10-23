@@ -26,7 +26,7 @@ import com.example.information.Configure.exitsystem;
 import java.io.IOException;
 
 
-public class PlayvideotwoActivity extends AppCompatActivity {
+public class PlayvideotwoActivity extends exitsystem {
 
     SurfaceView surfaceView;
     Button bt1,bt2;

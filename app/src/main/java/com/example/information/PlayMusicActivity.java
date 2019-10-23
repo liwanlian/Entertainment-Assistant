@@ -726,11 +726,11 @@ public class PlayMusicActivity extends exitsystem implements View.OnClickListene
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mediaPlayer.stop();
+
         mediaPlayer.release();
         musicsongtwo.removeCallbacks(runnable);
-        thread1.destroy();
-        thread2.destroy();
+     //   thread1.destroy();
+       // thread2.destroy();
 
     }
 }

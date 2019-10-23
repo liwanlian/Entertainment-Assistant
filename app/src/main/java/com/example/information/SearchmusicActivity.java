@@ -166,6 +166,6 @@ public class SearchmusicActivity extends exitsystem {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        thread1.destroy();
+
     }
 }
